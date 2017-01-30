@@ -1,0 +1,78 @@
+\documentclass{article}
+
+%% mimicing the dagrep class
+\usepackage{amsmath}
+\makeatletter
+\renewcommand\normalsize{%
+   \@setfontsize\normalsize\@xpt{13}%
+   \abovedisplayskip 10\p@ \@plus2\p@ \@minus5\p@
+   \abovedisplayshortskip \z@ \@plus3\p@
+   \belowdisplayshortskip 6\p@ \@plus3\p@ \@minus3\p@
+   \belowdisplayskip \abovedisplayskip
+   \let\@listi\@listI}
+\normalsize
+\renewcommand\small{%
+   \@setfontsize\small\@ixpt{11.5}%
+   \abovedisplayskip 8.5\p@ \@plus3\p@ \@minus4\p@
+   \abovedisplayshortskip \z@ \@plus2\p@
+   \belowdisplayshortskip 4\p@ \@plus2\p@ \@minus2\p@
+   \def\@listi{\leftmargin\leftmargini
+               \topsep 4\p@ \@plus2\p@ \@minus2\p@
+               \parsep 2\p@ \@plus\p@ \@minus\p@
+               \itemsep \parsep}%
+   \belowdisplayskip \abovedisplayskip
+}
+
+\begin{document}
+
+\title{A standard for system integration and proof interchange}
+\author{report from the breakout session \\at the October 2016 Dagstuhl seminar on Universality of Proofs}
+\maketitle
+
+Several requirements were put forward.
+Jasmin Blanchette suggested a standard similar to TSTP but with more structure, possibly a standardized subset of Isar.
+Freek Wiedijk suggested that the original source file of the proof should be recoverable and that the high-level structure of the proof should be apparent.
+Gilles Dowek pointed out that there are three categories of approach to this language: $\lambda$-terms, low-level proof steps (like LCF inference rules), or the statements of intermediate results (plus hints and other structure).
+
+Other issues that were discussed were low level versus high level proofs, forwards versus backwards proofs and complete versus partial proofs, as well as the use of metadata to indicate the specific logic or its general features (e.g., being constructive).
+
+The session then split into groups to gain more insight from considering concrete examples.
+%Consider trying to formalise one of the "100 theorems" on Freek's website. (We chose #20)
+%1. Formalise it in your ideal "universal language"
+%2. Formalise it idiomatically in 2 or more existing systems
+%See what the relevant questions/issues are by looking at this concrete example.
+%A question: should concepts be in background knowledge, or should they be explicitly defined?
+%Do we need a dictionary of mathematical concepts? Then each system contributes an implementation?
+%Example of the formalisation: "!p. prime p ==> p mod 4 = 1 ==> ?a b. p = a^2 + b^2". background knowledge includes things like "prime", but also "==>'.
+%Suggestion from one of the groups: pick the weakest fragment of logic to state what you need
+%One group did a very precise full spec and mockup. Maybe too precise.
+%Another did a more abstract version with axioms/assumptions. Looked translatable to THF.
+
+%Questions: Just use LF? But need to support incomplete proofs. Just use MMT?
+
+Finally the session discussed the following sketch by Florian Rabe for the core grammar of a possible proof standard:
+\[
+\begin{array}{lcll}
+S       &::=& G\;is\;C\vdash^L_{T^*} \{E\} \; by\; \{P\} & \text{theorem statement}\\
+P       &::=& E & \text{proof term}\\
+        &|&   G (C,\; \{E\}^*,\; \{P\}^*) & \text{operator/tactic applied to arguments}\\
+        &|&   let\; C\; in\; \{P\} & \text{local definition}\\
+        &|&   hence\;C\; by\; P; \{P\} & \text{forward step} \\
+        &|&   goal\; C \;by\; P; \{P\} & \text{backward step}\\
+        &|&   use\; E^* & \text{partial proof}\\
+E       &::=& G\;\;|\;\; X \;\;|\;\;\ldots & \text{expressions, terms, types, formulas, etc.}\\
+C       &::=& (X\;[:E]\;[=E])^* & \text{contexts}\\
+L       &::=&  & \text{logic identifier} \\
+T       &::=&  & \text{theory identifier}\\
+G       &::=&  & \text{global id from logic, theories, theorems} \\
+X       &::=&  & \text{local id introduced in proof}\\
+\end{array}
+\]
+Here curly brackets indicate the scope of the local identifiers introduced in the corresponding context, and $C\vdash^L_{T^*} E$ expresses the theorem ``in logic $L$ after importing the theories $T^*$ we have for all $C$ that $E$''.
+A more refined version should include metadata to attach, e.g., original sources.
+It is straightforward to adapt the concrete syntax of existing standards such as TSTP or OMDoc to subsume (and possibly converge to) this abstract syntax.
+
+To move forward, the session concluded that the community should collect standard prototypes and proof examples to better understand if this grammar suffices.
+Ramana Kumar and Florian Rabe volunteered to host this process using the repository \verb|https://github.com/UniFormal/Proofs| which is open to and solicits community distributions.
+
+\end{document}
